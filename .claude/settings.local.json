@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx create-expo-app@latest mobile --template blank-typescript)",
+      "Bash(npx tsc:*)"
+    ]
+  }
+}

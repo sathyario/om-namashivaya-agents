@@ -1,0 +1,314 @@
+
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font-sans); }
+  .tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 1.5rem; padding-top: 1rem; }
+  .tab { padding: 6px 14px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); font-size: 13px; cursor: pointer; background: var(--color-background-primary); color: var(--color-text-secondary); transition: all 0.15s; }
+  .tab.active { background: var(--color-background-info); color: var(--color-text-info); border-color: var(--color-border-info); font-weight: 500; }
+  .section { display: none; }
+  .section.active { display: block; }
+  .card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1rem 1.25rem; margin-bottom: 10px; }
+  .card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .badge { font-size: 11px; padding: 2px 8px; border-radius: var(--border-radius-md); font-weight: 500; }
+  .badge-must { background: var(--color-background-danger); color: var(--color-text-danger); }
+  .badge-power { background: var(--color-background-warning); color: var(--color-text-warning); }
+  .badge-auto { background: var(--color-background-success); color: var(--color-text-success); }
+  .badge-ci { background: var(--color-background-info); color: var(--color-text-info); }
+  .cmd { font-family: var(--font-mono); font-size: 12px; background: var(--color-background-secondary); padding: 2px 7px; border-radius: 4px; color: var(--color-text-primary); }
+  .title { font-size: 14px; font-weight: 500; color: var(--color-text-primary); }
+  .why { font-size: 13px; color: var(--color-text-secondary); line-height: 1.6; margin-top: 6px; }
+  .example { font-family: var(--font-mono); font-size: 12px; background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 10px 12px; margin-top: 10px; color: var(--color-text-primary); white-space: pre; overflow-x: auto; border: 0.5px solid var(--color-border-tertiary); }
+  .section-label { font-size: 11px; font-weight: 500; color: var(--color-text-tertiary); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 10px; }
+  .tip { background: var(--color-background-success); border-radius: var(--border-radius-md); padding: 10px 14px; font-size: 13px; color: var(--color-text-success); margin-top: 12px; }
+</style>
+
+<h2 class="sr-only">Claude Code most powerful options for building production systems</h2>
+
+<div class="tabs">
+  <div class="tab active" onclick="show('memory')">Memory & Context</div>
+  <div class="tab" onclick="show('commands')">Power Commands</div>
+  <div class="tab" onclick="show('flags')">CLI Flags</div>
+  <div class="tab" onclick="show('hooks')">Hooks & Automation</div>
+  <div class="tab" onclick="show('workflow')">Prod Workflow</div>
+</div>
+
+<div id="memory" class="section active">
+  <div class="section-label">Persistent memory — Claude never forgets your project</div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="cmd">CLAUDE.md</span>
+      <span class="badge badge-must">Must have</span>
+    </div>
+    <div class="title">Project brain — loaded every session automatically</div>
+    <div class="why">Put your architecture, tech stack, folder structure, coding standards here. Claude reads it on every session — zero re-explaining.</div>
+    <div class="example">## Tech Stack
+- Backend: FastAPI + PostgreSQL
+- Frontend: React + Tailwind
+- Infra: Docker + GitHub Actions
+
+## Rules
+- Always write tests for new endpoints
+- Use pydantic models for all schemas
+- Never hardcode secrets</div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="cmd">~/.claude/CLAUDE.md</span>
+      <span class="badge badge-power">Global</span>
+    </div>
+    <div class="title">Global memory — applies to ALL your projects</div>
+    <div class="why">Put your personal preferences here — coding style, preferred patterns, languages. Loaded across every project.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="cmd">.claudeignore</span>
+      <span class="badge badge-power">Token saver</span>
+    </div>
+    <div class="title">Exclude junk files — 50–70% token reduction</div>
+    <div class="why">Claude won't read node_modules, dist, build folders — massively reduces token waste and speeds up every session.</div>
+    <div class="example">node_modules/
+dist/
+build/
+.git/
+*.log
+coverage/
+__pycache__/</div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="cmd">/memory</span>
+      <span class="badge badge-auto">Auto-builds</span>
+    </div>
+    <div class="title">Auto-memory — Claude saves learnings across sessions</div>
+    <div class="why">Claude automatically saves things it discovers — build commands, debugging insights, project patterns. Persists between sessions.</div>
+  </div>
+</div>
+
+<div id="commands" class="section">
+  <div class="section-label">Slash commands — the real power of Claude Code</div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="cmd">/advisor</span>
+      <span class="badge badge-must">Smartest</span>
+    </div>
+    <div class="title">Sonnet executes, Opus advises — best quality at lower cost</div>
+    <div class="why">Enable this first for any complex build. Opus only kicks in for hard architectural decisions. 74.8% on SWE-bench with 11.9% lower cost vs Sonnet alone.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="cmd">/batch</span>
+      <span class="badge badge-power">Parallel</span>
+    </div>
+    <div class="title">Run changes across multiple files in parallel worktrees</div>
+    <div class="why">Decomposes work into 5–30 independent units, each running in its own git worktree. Perfect for migrations, refactors, adding tests across all files.</div>
+    <div class="example">/batch add input validation to every FastAPI endpoint in src/routes/</div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="cmd">/simplify</span>
+      <span class="badge badge-power">3 agents</span>
+    </div>
+    <div class="title">3-agent parallel code review — run after every feature</div>
+    <div class="why">Spawns 3 parallel agents reviewing from different angles. Catches unused imports, redundant logic, complexity issues. Run after every AI-generated code block.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="cmd">/security-review</span>
+      <span class="badge badge-must">Pre-deploy</span>
+    </div>
+    <div class="title">Scans current git branch diff for vulnerabilities</div>
+    <div class="why">Run before every PR merge. Scoped to your branch changes only — not the whole codebase. Essential before deploying auth, payments, or APIs.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="cmd">/compact</span>
+      <span class="badge badge-auto">Token mgmt</span>
+    </div>
+    <div class="title">Compress context when it hits 80% — never lose progress</div>
+    <div class="why">When context fills up, this compresses history into a dense summary. You can guide what it keeps.</div>
+    <div class="example">/compact Focus on auth module and current test failures</div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="cmd">/loop</span>
+      <span class="badge badge-auto">Background</span>
+    </div>
+    <div class="title">Background cron job — monitor deployments while you code</div>
+    <div class="why">Creates a background job that fires at an interval. Great for monitoring CI builds, checking logs, watching for errors.</div>
+    <div class="example">/loop 5m check if the deployment finished successfully</div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="cmd">/btw</span>
+      <span class="badge badge-power">Context clean</span>
+    </div>
+    <div class="title">Ask a side question without polluting main context</div>
+    <div class="why">Quick questions that don't need to consume context. Keeps your main session clean and focused.</div>
+  </div>
+</div>
+
+<div id="flags" class="section">
+  <div class="section-label">CLI flags — launch-time power options</div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="cmd">Shift+Tab</span>
+      <span class="badge badge-must">Most used</span>
+    </div>
+    <div class="title">Cycle: Normal → Auto-accept → Plan mode</div>
+    <div class="why">Plan mode = Claude reads everything but makes zero changes. Use before touching production-critical code, DB migrations, or auth flows.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="cmd">claude -c</span>
+      <span class="badge badge-power">Resume</span>
+    </div>
+    <div class="title">Continue last session — pick up exactly where you left off</div>
+    <div class="why">Don't re-explain your project every time. Resume with cached context and all prior decisions intact.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="cmd">claude -p "prompt"</span>
+      <span class="badge badge-ci">CI/CD</span>
+    </div>
+    <div class="title">Non-interactive mode — scriptable for CI pipelines</div>
+    <div class="why">Run Claude Code in GitHub Actions, cron jobs, or shell scripts. One-shot query that exits after completion.</div>
+    <div class="example">claude -p "Fix all TypeScript errors" --output-format json</div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="cmd">--append-system-prompt</span>
+      <span class="badge badge-power">Custom persona</span>
+    </div>
+    <div class="title">Add instructions to Claude without replacing defaults</div>
+    <div class="why">Make Claude act as a senior backend engineer, security auditor, etc — while keeping all its built-in capabilities.</div>
+    <div class="example">claude --append-system-prompt "You are a senior FastAPI engineer. Always write async endpoints and include error handling."</div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="cmd">--worktree / -w</span>
+      <span class="badge badge-power">Safe edits</span>
+    </div>
+    <div class="title">Isolated git worktree — changes never touch main branch</div>
+    <div class="why">Perfect for risky refactors or experiments. Auto-cleaned if no changes made. You review before merging.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="cmd">permissions in settings.json</span>
+      <span class="badge badge-must">Security</span>
+    </div>
+    <div class="title">Control exactly what Claude can read/write/run</div>
+    <div class="why">Never let Claude touch .env files, production configs, or run sudo. Lock it down for team use.</div>
+    <div class="example">{
+  "permissions": {
+    "allowedTools": ["Read", "Write(src/**)", "Bash(git *)"],
+    "deny": ["Read(.env*)", "Write(production.config.*)", "Bash(rm *)"]
+  }
+}</div>
+  </div>
+</div>
+
+<div id="hooks" class="section">
+  <div class="section-label">Hooks — automatic actions on Claude's events</div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="cmd">PostToolUse hook</span>
+      <span class="badge badge-must">Auto-format</span>
+    </div>
+    <div class="title">Run formatter/linter automatically after every file edit</div>
+    <div class="why">Claude writes code → your linter runs automatically → no manual formatting ever. Production code stays clean without effort.</div>
+    <div class="example">{
+  "hooks": {
+    "PostToolUse": [{
+      "matcher": "Write(*.py)",
+      "hooks": [{ "type": "command", "command": "python -m black $file" }]
+    }]
+  }
+}</div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="cmd">PreToolUse hook</span>
+      <span class="badge badge-power">Type check</span>
+    </div>
+    <div class="title">Run type check BEFORE accepting changes</div>
+    <div class="why">Catch TypeScript/mypy errors before they land in your codebase. Claude's change gets blocked if types fail.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="cmd">/hooks</span>
+      <span class="badge badge-auto">View all</span>
+    </div>
+    <div class="title">See all configured lifecycle hooks in your session</div>
+    <div class="why">Audit what's running automatically in your session at any time.</div>
+  </div>
+
+  <div class="tip">Pro tip: Hooks + /batch = Claude makes changes across 20 files AND auto-formats + type-checks all of them. Zero manual work.</div>
+</div>
+
+<div id="workflow" class="section">
+  <div class="section-label">The production workflow — use this sequence every day</div>
+
+  <div class="card">
+    <div class="card-header"><span class="badge badge-must">Step 1</span><span class="title" style="margin-left:4px;">Setup once</span></div>
+    <div class="why">Create CLAUDE.md, .claudeignore, permissions in settings.json, hooks for auto-format.</div>
+    <div class="example">touch CLAUDE.md .claudeignore
+claude  # first launch, set up /advisor with Opus</div>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><span class="badge badge-power">Step 2</span><span class="title" style="margin-left:4px;">Every feature</span></div>
+    <div class="why">Plan → build → review → clear context. Never let context overflow.</div>
+    <div class="example">Shift+Tab         # switch to Plan mode first
+# describe the feature, review Claude's plan
+Shift+Tab         # back to normal mode
+# Claude builds it
+/simplify         # 3-agent review
+/security-review  # check for vulns
+/compact          # compress before next feature</div>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><span class="badge badge-ci">Step 3</span><span class="title" style="margin-left:4px;">Big refactors</span></div>
+    <div class="why">Use /batch for cross-file changes. Use -w worktree flag for risky work.</div>
+    <div class="example">claude -w  # isolated worktree
+/batch add error handling to all route files in src/</div>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><span class="badge badge-auto">Step 4</span><span class="title" style="margin-left:4px;">CI/CD integration</span></div>
+    <div class="why">Run Claude non-interactively in GitHub Actions for automated reviews.</div>
+    <div class="example">claude -p "Review this PR diff for security issues" \
+  --output-format json > review.json</div>
+  </div>
+
+  <div class="tip">Monthly: run /insights to see your usage patterns, costs, and where Claude is spending most tokens. Optimize from there.</div>
+</div>
+
+<script>
+function show(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+}
+</script>
