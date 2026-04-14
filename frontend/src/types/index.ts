@@ -7,6 +7,8 @@ export interface UserProfile {
   full_name: string
   phone: string
   shop_name?: string
+  shop_address?: string
+  shop_phone?: string
   created_at: string
 }
 

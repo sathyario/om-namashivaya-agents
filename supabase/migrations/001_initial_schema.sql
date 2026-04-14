@@ -13,6 +13,8 @@ create table user_profiles (
   full_name text,
   phone text,
   shop_name text,
+  shop_address text,   -- saved once, auto-filled on bulk orders
+  shop_phone text,     -- shop contact number (may differ from owner's phone)
   created_at timestamptz default now()
 );
 

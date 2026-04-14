@@ -5,3 +5,5 @@ class UserProfileUpdate(BaseModel):
     full_name: Optional[str] = None
     phone: Optional[str] = None
     shop_name: Optional[str] = None
+    shop_address: Optional[str] = None
+    shop_phone: Optional[str] = None

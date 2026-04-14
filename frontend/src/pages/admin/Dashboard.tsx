@@ -43,6 +43,7 @@ export default function AdminDashboard() {
           { label: '+ Add New Product', to: '/admin/products?action=add' },
           { label: '📦 Manage Inventory', to: '/admin/inventory' },
           { label: '🧾 View All Orders', to: '/admin/orders' },
+          { label: '🏪 Shop Access Requests', to: '/admin/shop-requests' },
           { label: '👥 Manage Users', to: '/admin/users' },
         ].map(action => (
           <Link

@@ -1,16 +1,29 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { api } from '../../lib/api'
 import { formatPrice } from '../../lib/utils'
 import { CartItem } from '../../types'
+import { useAuth } from '../../hooks/useAuth'
 
 export default function BulkOrder() {
   const navigate = useNavigate()
   const location = useLocation()
   const cart: CartItem[] = location.state?.cart ?? []
+  const { profile } = useAuth()
   const [form, setForm] = useState({ phone: '', address: '', notes: '' })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+
+  // Auto-fill shop address and phone from already-loaded profile
+  useEffect(() => {
+    if (profile) {
+      setForm(f => ({
+        ...f,
+        phone: profile.shop_phone || profile.phone || '',
+        address: profile.shop_address || '',
+      }))
+    }
+  }, [profile])
 
   const totalAmount = cart.reduce(
     (s, i) => s + (i.product.price_wholesale ?? i.product.price_retail) * i.quantity, 0
@@ -65,18 +78,29 @@ export default function BulkOrder() {
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Shop Phone
+            {form.phone && (
+              <span className="ml-2 text-xs text-green-600 font-normal">auto-filled from profile</span>
+            )}
+          </label>
           <input
             required
             type="tel"
             value={form.phone}
             onChange={e => setForm(f => ({ ...f, phone: e.target.value }))}
             className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Contact number"
+            placeholder="Shop contact number"
           />
         </div>
+
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Delivery Address</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Delivery Address
+            {form.address && (
+              <span className="ml-2 text-xs text-green-600 font-normal">auto-filled from profile</span>
+            )}
+          </label>
           <textarea
             required
             rows={3}
@@ -85,7 +109,13 @@ export default function BulkOrder() {
             className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Shop address for delivery"
           />
+          {profile && !form.address && (
+            <p className="text-xs text-orange-500 mt-1">
+              Save your shop address in your profile to auto-fill this next time.
+            </p>
+          )}
         </div>
+
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
           <input
