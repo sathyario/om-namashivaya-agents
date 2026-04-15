@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { api } from '../../lib/api'
 import { formatPrice } from '../../lib/utils'
-import { CartItem } from '../../types'
+import type { CartItem } from '../../types'
 import { useAuth } from '../../hooks/useAuth'
 
 export default function BulkOrder() {

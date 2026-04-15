@@ -1,6 +1,6 @@
 import { useAllOrders } from '../../hooks/useOrders'
 import { formatDate, formatPrice, statusColor } from '../../lib/utils'
-import { OrderStatus } from '../../types'
+import type { OrderStatus } from '../../types'
 
 const STATUS_OPTIONS: OrderStatus[] = ['pending', 'confirmed', 'dispatched', 'delivered', 'cancelled']
 

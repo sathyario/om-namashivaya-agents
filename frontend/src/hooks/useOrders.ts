@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { api } from '../lib/api'
-import { Order } from '../types'
+import type { Order } from '../types'
 
 export function useOrders() {
   const [orders, setOrders] = useState<Order[]>([])

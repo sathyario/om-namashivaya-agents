@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { CartItem, Product } from '../types'
+import type { CartItem, Product } from '../types'
 
 const CART_KEY = 'om_cart'
 

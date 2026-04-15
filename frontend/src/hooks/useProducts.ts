@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { api } from '../lib/api'
-import { Product } from '../types'
+import type { Product } from '../types'
 
 interface UseProductsOptions {
   categoryId?: number

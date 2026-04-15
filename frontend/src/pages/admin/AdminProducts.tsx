@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useProducts } from '../../hooks/useProducts'
 import { api } from '../../lib/api'
 import { formatPrice } from '../../lib/utils'
-import { Product } from '../../types'
+import type { Product } from '../../types'
 
 interface ProductForm {
   name: string

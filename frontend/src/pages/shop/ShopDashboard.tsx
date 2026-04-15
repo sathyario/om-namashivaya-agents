@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useProducts } from '../../hooks/useProducts'
 import { formatPrice, stockLabel } from '../../lib/utils'
-import { Product, CartItem } from '../../types'
+import type { Product, CartItem } from '../../types'
 
 export default function ShopDashboard() {
   const { products, loading } = useProducts()
