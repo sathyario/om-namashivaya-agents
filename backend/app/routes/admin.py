@@ -85,4 +85,10 @@ def update_user_role(user_id: str, body: RoleUpdate, _: dict = Depends(require_a
     else:
         supabase.table("user_profiles").update({"role": body.role}).eq("id", user_id).execute()
 
+    # Update Supabase auth metadata so the JWT carries the new role on next refresh
+    supabase.auth.admin.update_user_by_id(
+        user_id,
+        {"user_metadata": {"role": body.role}},
+    )
+
     return {"message": f"User role updated to {body.role}"}

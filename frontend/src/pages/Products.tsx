@@ -212,7 +212,7 @@ export default function Products() {
                 className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3"
                 initial="hidden"
                 animate="visible"
-                variants={{ visible: { transition: { staggerChildren: 0.04 } } }}
+                variants={{ visible: { transition: { staggerChildren: 0.02 } } }}
               >
                 {filtered.map(p => (
                   <motion.div

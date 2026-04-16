@@ -7,21 +7,35 @@ interface UseProductsOptions {
   inStockOnly?: boolean
 }
 
+const _cache = new Map<string, Product[]>()
+
+export function clearProductCache() {
+  _cache.clear()
+}
+
 export function useProducts(options: UseProductsOptions = {}) {
-  const [products, setProducts] = useState<Product[]>([])
-  const [loading, setLoading] = useState(true)
+  const cacheKey = `${options.categoryId ?? 'all'}-${options.inStockOnly ?? false}`
+  const cached = _cache.get(cacheKey)
+
+  const [products, setProducts] = useState<Product[]>(cached ?? [])
+  const [loading, setLoading] = useState(!cached)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
+    if (_cache.has(cacheKey)) return
+
     const params: Record<string, string | number | boolean> = {}
     if (options.categoryId) params.category_id = options.categoryId
     if (options.inStockOnly) params.in_stock = true
 
     api.get<Product[]>('/products', { params })
-      .then(res => setProducts(res.data))
+      .then(res => {
+        _cache.set(cacheKey, res.data)
+        setProducts(res.data)
+      })
       .catch(() => setError('Failed to load products'))
       .finally(() => setLoading(false))
-  }, [options.categoryId, options.inStockOnly])
+  }, [cacheKey])
 
   return { products, loading, error }
 }

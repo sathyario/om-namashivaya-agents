@@ -15,7 +15,14 @@
       "WebFetch(domain:bigbasket.com)",
       "WebFetch(domain:jiomart.com)",
       "mcp__puppeteer__puppeteer_fill",
-      "mcp__puppeteer__puppeteer_click"
+      "mcp__puppeteer__puppeteer_click",
+      "Bash(cmd /c \"npx supabase-mcp@latest --help\")",
+      "Bash(SUPABASE_ACCESS_TOKEN=sbp_9bc4fdcb6b168824e22dc1036b803c123eb4f82d cmd /c \"npx supabase-mcp@latest\")",
+      "Bash(npx supabase-mcp@latest)",
+      "Bash(kill %1)",
+      "Bash(echo \"exit: $?\")",
+      "Bash(python3 *)",
+      "Bash(SUPABASE_ACCESS_TOKEN=sbp_9bc4fdcb6b168824e22dc1036b803c123eb4f82d npx -y @supabase/mcp-server-supabase@latest --read-only)"
     ]
   }
 }

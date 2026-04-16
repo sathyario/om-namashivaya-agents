@@ -55,7 +55,7 @@ export default function Home() {
   const { profile } = useAuth()
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-green-50">
 
       {/* ── HERO SECTION ── */}
       <section className="bg-[#0a2e2e] relative overflow-hidden">
@@ -103,34 +103,19 @@ export default function Home() {
                 premium Healthy Grocer hing directly to your store with zero delivery fees.
               </motion.p>
 
-              {/* CTA Buttons */}
+              {/* CTA Button */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.3 }}
-                className="mt-8 flex flex-col sm:flex-row gap-3 justify-center lg:justify-start"
+                className="mt-8 flex justify-center lg:justify-start"
               >
                 <Link
                   to="/products"
-                  className="bg-green-500 hover:bg-green-400 text-white font-bold px-8 py-3.5 rounded-full text-sm transition-colors flex items-center justify-center gap-2"
+                  className="bg-green-500 hover:bg-green-400 text-white font-bold px-8 py-3.5 rounded-full text-sm transition-colors flex items-center gap-2"
                 >
                   Browse Products →
                 </Link>
-                {!profile ? (
-                  <Link
-                    to="/auth/login"
-                    className="border border-white/30 hover:border-white/60 text-white font-semibold px-8 py-3.5 rounded-full text-sm transition-colors flex items-center justify-center gap-2 backdrop-blur-sm"
-                  >
-                    Login / Sign Up
-                  </Link>
-                ) : (
-                  <Link
-                    to="/products"
-                    className="border border-white/30 hover:border-white/60 text-white font-semibold px-8 py-3.5 rounded-full text-sm transition-colors flex items-center justify-center gap-2"
-                  >
-                    View All Products
-                  </Link>
-                )}
               </motion.div>
 
               {/* Trust badges */}
@@ -245,7 +230,7 @@ export default function Home() {
       </section>
 
       {/* ── WHY CHOOSE US ── */}
-      <section className="bg-white py-12 lg:py-16">
+      <section className="bg-green-50/60 py-12 lg:py-16">
         <div className="max-w-7xl mx-auto px-4 lg:px-8">
           <div className="text-center mb-10">
             <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Why Om Namashivaya?</p>

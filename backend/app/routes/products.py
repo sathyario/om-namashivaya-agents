@@ -3,34 +3,30 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from typing import Optional
 from app.database import supabase
 from app.models.product import ProductCreate, ProductUpdate
-from app.middleware.auth import get_current_user, require_admin
-from jose import jwt, JWTError
-from app.config import settings
+from app.middleware.auth import get_current_user, require_admin, decode_token
+from jose import JWTError
 
 router = APIRouter(prefix="/products", tags=["products"])
 
 security = HTTPBearer(auto_error=False)
 
+
 def get_caller_role(credentials: HTTPAuthorizationCredentials = Depends(security)) -> str:
-    """Returns role from JWT payload — no DB lookup needed."""
     if not credentials:
         return "guest"
     try:
-        payload = jwt.decode(
-            credentials.credentials,
-            settings.supabase_jwt_secret,
-            algorithms=["HS256"],
-            options={"verify_aud": False},
-        )
+        payload = decode_token(credentials.credentials)
         role = (payload.get("user_metadata") or {}).get("role")
         return role if role in ("shop", "admin") else "consumer"
-    except JWTError:
+    except (JWTError, HTTPException):
         return "guest"
+
 
 def strip_wholesale(products: list, role: str) -> list:
     if role in ("shop", "admin"):
         return products
     return [{k: v for k, v in p.items() if k != "price_wholesale"} for p in products]
+
 
 @router.get("")
 def list_products(
@@ -46,6 +42,7 @@ def list_products(
     res = query.order("name").execute()
     return strip_wholesale(res.data, role)
 
+
 @router.get("/{product_id}")
 def get_product(product_id: int, role: str = Depends(get_caller_role)):
     res = supabase.table("products").select("*, categories(*)").eq("id", product_id).single().execute()
@@ -59,11 +56,13 @@ def create_product(product: ProductCreate, _: dict = Depends(require_admin)):
     res = supabase.table("products").insert(product.model_dump()).execute()
     return res.data[0]
 
+
 @router.put("/{product_id}")
 def update_product(product_id: int, product: ProductUpdate, _: dict = Depends(require_admin)):
     data = {k: v for k, v in product.model_dump().items() if v is not None}
     res = supabase.table("products").update(data).eq("id", product_id).execute()
     return res.data[0]
+
 
 @router.delete("/{product_id}")
 def delete_product(product_id: int, _: dict = Depends(require_admin)):

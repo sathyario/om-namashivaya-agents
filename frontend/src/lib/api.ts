@@ -8,17 +8,33 @@ export const api = axios.create({
   headers: { 'Content-Type': 'application/json' },
 })
 
-// Attach Supabase JWT to every request automatically
+let _accessToken: string | null = null
+
+// Refresh token on startup if expiring within 30s, so first request gets a valid token.
+const _tokenReady = supabase.auth.getSession().then(async ({ data }) => {
+  const session = data.session
+  if (!session) { _accessToken = null; return }
+  const expiresAt = session.expires_at ?? 0
+  if (expiresAt < Math.floor(Date.now() / 1000) + 30) {
+    const { data: fresh } = await supabase.auth.refreshSession()
+    _accessToken = fresh.session?.access_token ?? null
+  } else {
+    _accessToken = session.access_token
+  }
+})
+
+export function setAccessToken(token: string | null) {
+  _accessToken = token
+}
+
 api.interceptors.request.use(async (config) => {
-  const { data } = await supabase.auth.getSession()
-  const token = data.session?.access_token
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`
+  await _tokenReady
+  if (_accessToken) {
+    config.headers.Authorization = `Bearer ${_accessToken}`
   }
   return config
 })
 
-// Global error handler
 api.interceptors.response.use(
   (response) => response,
   (error) => {

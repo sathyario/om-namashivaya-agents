@@ -37,6 +37,7 @@ export default function Login() {
             data: {
               full_name: form.full_name,
               phone: form.phone,
+              role: isShop ? 'shop' : 'consumer',
               ...(isShop && {
                 shop_request: true,
                 shop_name: form.shop_name,
