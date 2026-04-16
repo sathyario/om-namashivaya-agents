@@ -2,7 +2,20 @@
   "permissions": {
     "allow": [
       "Bash(npx create-expo-app@latest mobile --template blank-typescript)",
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "mcp__puppeteer__puppeteer_screenshot",
+      "mcp__puppeteer__puppeteer_evaluate",
+      "mcp__puppeteer__puppeteer_navigate",
+      "Bash(npm install *)",
+      "Bash(start /B \"\" \"C:\\\\Users\\\\SATHYANARAYANA M\\\\OneDrive\\\\Documents\\\\om-frontend\\\\backend\\\\venv312\\\\Scripts\\\\uvicorn.exe\" app.main:app --host 0.0.0.0 --port 8000)",
+      "Bash(curl -s http://localhost:8000/products?limit=1)",
+      "WebSearch",
+      "WebFetch(domain:blinkit.com)",
+      "WebFetch(domain:zeptonow.com)",
+      "WebFetch(domain:bigbasket.com)",
+      "WebFetch(domain:jiomart.com)",
+      "mcp__puppeteer__puppeteer_fill",
+      "mcp__puppeteer__puppeteer_click"
     ]
   }
 }

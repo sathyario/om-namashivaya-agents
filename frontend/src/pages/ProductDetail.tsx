@@ -1,88 +1,170 @@
 import { useParams, useNavigate } from 'react-router-dom'
 import { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { useProduct } from '../hooks/useProducts'
 import { useCart } from '../hooks/useCart'
-import { formatPrice, stockLabel } from '../lib/utils'
+import { formatPrice } from '../lib/utils'
 
 export default function ProductDetail() {
   const { id } = useParams<{ id: string }>()
   const { product, loading } = useProduct(Number(id))
-  const { addToCart } = useCart()
+  const { cart, addToCart, updateQuantity } = useCart()
   const navigate = useNavigate()
-  const [qty, setQty] = useState(1)
-  const [added, setAdded] = useState(false)
+  const [imgError, setImgError] = useState(false)
 
-  if (loading) return <div className="p-8 text-center text-gray-400">Loading...</div>
-  if (!product) return <div className="p-8 text-center text-gray-400">Product not found</div>
-
-  const stock = stockLabel(product.stock_quantity)
-
-  const handleAdd = () => {
-    addToCart(product, qty)
-    setAdded(true)
-    setTimeout(() => setAdded(false), 2000)
+  if (loading) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 lg:px-8 py-8">
+        <div className="lg:grid lg:grid-cols-2 lg:gap-12">
+          <div className="w-full h-72 lg:h-96 bg-gray-100 rounded-2xl animate-pulse" />
+          <div className="mt-6 lg:mt-0 space-y-4">
+            <div className="h-6 bg-gray-100 rounded animate-pulse w-3/4" />
+            <div className="h-4 bg-gray-100 rounded animate-pulse w-1/2" />
+            <div className="h-4 bg-gray-100 rounded animate-pulse w-full" />
+          </div>
+        </div>
+      </div>
+    )
   }
 
-  return (
-    <div className="max-w-xl mx-auto px-4 py-8">
-      {product.image_url ? (
-        <img
-          src={product.image_url}
-          alt={product.name}
-          className="w-full h-56 object-cover rounded-xl mb-6"
-        />
-      ) : (
-        <div className="w-full h-56 bg-gray-100 rounded-xl mb-6 flex items-center justify-center text-5xl">
-          {product.category_id === 1 ? '⚡' : '🛒'}
-        </div>
-      )}
-
-      <span className={`text-xs font-medium px-2 py-1 rounded-full ${stock.color}`}>
-        {stock.label}
-      </span>
-
-      <h1 className="text-xl font-bold text-gray-900 mt-2">{product.name}</h1>
-      {product.description && (
-        <p className="text-gray-500 text-sm mt-2">{product.description}</p>
-      )}
-
-      <div className="mt-4 text-2xl font-bold text-blue-600">
-        {formatPrice(product.price_retail)}
-        <span className="text-sm text-gray-400 font-normal ml-1">/ {product.unit}</span>
+  if (!product) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 py-20 text-center">
+        <div className="text-5xl mb-3">📦</div>
+        <p className="text-gray-500 font-medium">Product not found</p>
+        <button onClick={() => navigate('/products')} className="mt-4 text-green-600 text-sm font-medium underline">
+          Back to products
+        </button>
       </div>
+    )
+  }
 
-      {product.stock_quantity > 0 && (
-        <div className="mt-6 flex items-center gap-3">
-          <div className="flex items-center border rounded-lg overflow-hidden">
-            <button
-              onClick={() => setQty(q => Math.max(1, q - 1))}
-              className="px-3 py-2 text-gray-600 hover:bg-gray-50"
-            >−</button>
-            <span className="px-4 py-2 font-medium">{qty}</span>
-            <button
-              onClick={() => setQty(q => Math.min(product.stock_quantity, q + 1))}
-              className="px-3 py-2 text-gray-600 hover:bg-gray-50"
-            >+</button>
+  const cartItem = cart.find(i => i.product.id === product.id)
+  const qty = cartItem?.quantity ?? 0
+  const isOutOfStock = product.stock_quantity === 0
+  const fallbackBg = product.category_id === 1 ? 'bg-blue-50' : 'bg-orange-50'
+  const fallbackIcon = product.category_id === 1 ? '⚡' : '🌿'
+
+  const QtyControls = () => (
+    <AnimatePresence mode="wait">
+      {qty === 0 ? (
+        <motion.button
+          key="add"
+          initial={{ scale: 0.95, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          exit={{ scale: 0.95, opacity: 0 }}
+          onClick={() => addToCart(product, 1)}
+          className="flex-1 bg-green-500 hover:bg-green-600 text-white py-3 rounded-2xl font-semibold text-sm"
+        >
+          ADD TO CART
+        </motion.button>
+      ) : (
+        <motion.div
+          key="qty"
+          initial={{ scale: 0.95, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          exit={{ scale: 0.95, opacity: 0 }}
+          className="flex items-center gap-3 w-full"
+        >
+          <div className="flex items-center bg-green-500 rounded-2xl overflow-hidden">
+            <button onClick={() => updateQuantity(product.id, qty - 1)}
+              className="text-white font-bold text-xl w-12 h-12 flex items-center justify-center hover:bg-green-600">−</button>
+            <span className="text-white font-bold text-lg w-10 text-center">{qty}</span>
+            <button onClick={() => updateQuantity(product.id, qty + 1)}
+              disabled={qty >= product.stock_quantity}
+              className="text-white font-bold text-xl w-12 h-12 flex items-center justify-center hover:bg-green-600 disabled:opacity-50">+</button>
           </div>
           <button
-            onClick={handleAdd}
-            className={`flex-1 py-2 rounded-lg font-medium text-sm transition-colors ${
-              added
-                ? 'bg-green-500 text-white'
-                : 'bg-blue-600 text-white hover:bg-blue-700'
-            }`}
+            onClick={() => navigate('/cart')}
+            className="flex-1 border-2 border-green-500 text-green-600 py-3 rounded-2xl font-semibold text-sm hover:bg-green-50"
           >
-            {added ? '✓ Added to Cart' : 'Add to Cart'}
+            View Cart →
           </button>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  )
+
+  return (
+    <div className="max-w-7xl mx-auto px-4 lg:px-8 py-6 pb-28 lg:pb-10">
+
+      <button onClick={() => navigate(-1)} className="flex items-center gap-1 text-gray-500 text-sm mb-6 hover:text-gray-800">
+        ← Back
+      </button>
+
+      {/* Desktop: 2-col side-by-side | Mobile: stacked */}
+      <div className="lg:grid lg:grid-cols-2 lg:gap-12 lg:items-start">
+
+        {/* Image column */}
+        <div className="lg:sticky lg:top-24">
+          <div className={`w-full h-64 lg:h-[480px] rounded-2xl overflow-hidden ${fallbackBg} flex items-center justify-center`}>
+            {product.image_url && !imgError ? (
+              <img
+                src={product.image_url}
+                alt={product.name}
+                className="w-full h-full object-contain p-6"
+                onError={() => setImgError(true)}
+              />
+            ) : (
+              <span className="text-8xl lg:text-9xl">{fallbackIcon}</span>
+            )}
+          </div>
+        </div>
+
+        {/* Info column */}
+        <div className="mt-6 lg:mt-0">
+          {isOutOfStock ? (
+            <span className="bg-red-100 text-red-600 text-xs font-semibold px-3 py-1 rounded-full">Out of stock</span>
+          ) : product.stock_quantity <= 5 ? (
+            <span className="bg-orange-100 text-orange-600 text-xs font-semibold px-3 py-1 rounded-full">
+              Only {product.stock_quantity} left
+            </span>
+          ) : (
+            <span className="bg-green-100 text-green-600 text-xs font-semibold px-3 py-1 rounded-full">In stock</span>
+          )}
+
+          <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 mt-3 leading-snug">{product.name}</h1>
+          <p className="text-sm text-gray-400 mt-1">{product.unit}</p>
+
+          {product.description && (
+            <p className="text-gray-500 text-sm mt-4 leading-relaxed">{product.description}</p>
+          )}
+
+          <div className="mt-5 mb-6">
+            <span className="text-3xl font-bold text-gray-900">{formatPrice(product.price_retail)}</span>
+            <span className="text-gray-400 text-sm ml-2">/ {product.unit}</span>
+          </div>
+
+          {/* ADD controls — inline on desktop */}
+          {!isOutOfStock && (
+            <div className="hidden lg:flex items-center gap-3 mb-6">
+              <QtyControls />
+            </div>
+          )}
+
+          {/* Delivery info card */}
+          <div className="bg-gray-50 rounded-2xl p-4 space-y-2.5 border border-gray-100">
+            <div className="flex items-center gap-3 text-sm text-gray-600">
+              <span>💰</span><span>Cash on Delivery — pay when order arrives</span>
+            </div>
+            <div className="flex items-center gap-3 text-sm text-gray-600">
+              <span>✅</span><span>Genuine — {product.category_id === 1 ? 'Panasonic / Eveready' : 'Healthy Grocer'}</span>
+            </div>
+            <div className="flex items-center gap-3 text-sm text-green-600 font-medium">
+              <span>🚚</span><span>Free delivery</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Fixed bottom bar — mobile only */}
+      {!isOutOfStock && (
+        <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t px-4 py-3">
+          <div className="max-w-7xl mx-auto flex items-center gap-3">
+            <QtyControls />
+          </div>
         </div>
       )}
-
-      <button
-        onClick={() => navigate('/cart')}
-        className="mt-3 w-full border border-gray-300 text-gray-700 py-2 rounded-lg text-sm hover:bg-gray-50"
-      >
-        View Cart
-      </button>
     </div>
   )
 }

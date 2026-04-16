@@ -45,76 +45,90 @@ export default function Checkout() {
   }
 
   return (
-    <div className="max-w-xl mx-auto px-4 py-8">
+    <div className="max-w-3xl mx-auto px-4 lg:px-8 py-8">
       <h1 className="text-xl font-bold text-gray-900 mb-6">Checkout</h1>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
-          <input
-            required
-            value={form.full_name}
-            onChange={e => setForm(f => ({ ...f, full_name: e.target.value }))}
-            className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Your name"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
-          <input
-            required
-            type="tel"
-            value={form.phone}
-            onChange={e => setForm(f => ({ ...f, phone: e.target.value }))}
-            className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="10-digit mobile number"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Delivery Address</label>
-          <textarea
-            required
-            rows={3}
-            value={form.address}
-            onChange={e => setForm(f => ({ ...f, address: e.target.value }))}
-            className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Full delivery address"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Notes (optional)</label>
-          <input
-            value={form.notes}
-            onChange={e => setForm(f => ({ ...f, notes: e.target.value }))}
-            className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Any special instructions"
-          />
-        </div>
+      <div className="lg:grid lg:grid-cols-[1fr_280px] lg:gap-8 lg:items-start">
 
-        {/* Payment */}
-        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-sm text-yellow-800">
-          💰 Payment: <strong>Cash on Delivery</strong> — pay when your order arrives
-        </div>
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+            <input
+              required
+              value={form.full_name}
+              onChange={e => setForm(f => ({ ...f, full_name: e.target.value }))}
+              className="w-full border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
+              placeholder="Your name"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+            <input
+              required
+              type="tel"
+              value={form.phone}
+              onChange={e => setForm(f => ({ ...f, phone: e.target.value }))}
+              className="w-full border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
+              placeholder="10-digit mobile number"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Delivery Address</label>
+            <textarea
+              required
+              rows={3}
+              value={form.address}
+              onChange={e => setForm(f => ({ ...f, address: e.target.value }))}
+              className="w-full border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
+              placeholder="Full delivery address"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Notes (optional)</label>
+            <input
+              value={form.notes}
+              onChange={e => setForm(f => ({ ...f, notes: e.target.value }))}
+              className="w-full border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
+              placeholder="Any special instructions"
+            />
+          </div>
 
-        {/* Order total */}
-        <div className="bg-gray-50 border rounded-lg p-4">
-          <div className="flex justify-between font-bold text-gray-900">
-            <span>Total to Pay</span>
+          <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4 text-sm text-yellow-800">
+            💰 Payment: <strong>Cash on Delivery</strong> — pay when your order arrives
+          </div>
+
+          {error && <div className="text-red-600 text-sm">{error}</div>}
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-green-500 text-white py-3.5 rounded-2xl font-semibold hover:bg-green-600 disabled:opacity-50 text-sm"
+          >
+            {loading ? 'Placing Order...' : `Place Order — ${formatPrice(totalAmount)}`}
+          </button>
+        </form>
+
+        {/* Order summary — sidebar on desktop */}
+        <div className="mt-6 lg:mt-0 lg:sticky lg:top-24 bg-gray-50 border border-gray-100 rounded-2xl p-5">
+          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Order Summary</p>
+          <div className="space-y-2">
+            {cart.map(({ product, quantity }) => (
+              <div key={product.id} className="flex justify-between text-sm">
+                <span className="text-gray-700 truncate pr-2">{product.name} × {quantity}</span>
+                <span className="font-medium text-gray-900 flex-shrink-0">{formatPrice(product.price_retail * quantity)}</span>
+              </div>
+            ))}
+          </div>
+          <div className="border-t mt-3 pt-3 flex justify-between font-bold text-gray-900">
+            <span>Total</span>
             <span>{formatPrice(totalAmount)}</span>
           </div>
-          <div className="text-xs text-gray-400 mt-1">{cart.length} items</div>
+          <div className="mt-2 text-xs text-green-600 font-medium flex items-center gap-1">
+            <span>🚚</span> Free delivery
+          </div>
         </div>
-
-        {error && <div className="text-red-600 text-sm">{error}</div>}
-
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full bg-blue-600 text-white py-3 rounded-xl font-medium hover:bg-blue-700 disabled:opacity-50"
-        >
-          {loading ? 'Placing Order...' : 'Place Order (COD)'}
-        </button>
-      </form>
+      </div>
     </div>
   )
 }

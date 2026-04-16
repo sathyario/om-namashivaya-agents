@@ -18,6 +18,7 @@ insert into products (category_id, name, description, price_retail, price_wholes
 
   (1,
    'Panasonic 9V Alkaline Battery',
+   
    'Panasonic 9V alkaline battery (6LR61). Reliable power for smoke detectors, guitar pedals and test equipment.',
    280, 238, 30, 'piece',
    'https://m.media-amazon.com/images/I/61bIPONaFcL._SX679_.jpg'),
