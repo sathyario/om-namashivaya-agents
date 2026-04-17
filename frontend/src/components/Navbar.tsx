@@ -1,3 +1,4 @@
+import { useState, useRef, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import { useCart } from '../hooks/useCart'
@@ -6,10 +7,33 @@ export default function Navbar() {
   const { profile, loading, signOut } = useAuth()
   const { totalItems } = useCart()
   const navigate = useNavigate()
+  const [open, setOpen] = useState(false)
+  const menuRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [])
 
   const handleSignOut = async () => {
+    setOpen(false)
     await signOut()
     navigate('/')
+  }
+
+  const initials = profile?.full_name
+    ? profile.full_name.split(' ').map((w: string) => w[0]).join('').slice(0, 2).toUpperCase()
+    : (profile?.role?.[0] ?? '?').toUpperCase()
+
+  const roleLabel: Record<string, string> = {
+    admin: 'Administrator',
+    shop: 'Shop / Business',
+    consumer: 'Customer',
   }
 
   return (
@@ -46,7 +70,6 @@ export default function Navbar() {
 
         {/* Right: Cart + Auth */}
         <div className="flex items-center gap-3">
-          {/* Mobile: Products link */}
           <Link to="/products" className="sm:hidden text-sm text-gray-500 hover:text-gray-900 font-medium">
             Products
           </Link>
@@ -64,16 +87,72 @@ export default function Navbar() {
           {/* Auth */}
           {!loading && (
             profile ? (
-              <div className="flex items-center gap-2">
-                <span className="hidden md:block text-xs text-gray-400 max-w-[120px] truncate">
-                  {profile.full_name || profile.role}
-                </span>
+              <div className="relative" ref={menuRef}>
                 <button
-                  onClick={handleSignOut}
-                  className="text-xs text-gray-400 hover:text-red-500 transition-colors font-medium"
+                  onClick={() => setOpen(v => !v)}
+                  className="flex items-center gap-2 focus:outline-none"
                 >
-                  Sign out
+                  <div className="w-8 h-8 rounded-full bg-[#0a2e2e] text-white text-xs font-bold flex items-center justify-center select-none">
+                    {initials}
+                  </div>
+                  <span className="hidden md:block text-sm font-medium text-gray-700 max-w-[100px] truncate">
+                    {profile.full_name?.split(' ')[0] || profile.role}
+                  </span>
+                  <span className="hidden md:block text-gray-400 text-xs">▾</span>
                 </button>
+
+                {open && (
+                  <div className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-lg border border-gray-100 py-2 z-50">
+                    {/* User info */}
+                    <div className="px-4 py-3 border-b border-gray-100">
+                      <p className="text-sm font-semibold text-gray-900 truncate">
+                        {profile.full_name || 'User'}
+                      </p>
+                      <p className="text-xs text-gray-400 mt-0.5">
+                        {roleLabel[profile.role] ?? profile.role}
+                      </p>
+                    </div>
+
+                    {/* Links */}
+                    <div className="py-1">
+                      <Link
+                        to="/orders"
+                        onClick={() => setOpen(false)}
+                        className="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                      >
+                        📦 My Orders
+                      </Link>
+                      {profile.role === 'admin' && (
+                        <Link
+                          to="/admin"
+                          onClick={() => setOpen(false)}
+                          className="flex items-center gap-2 px-4 py-2 text-sm text-purple-600 hover:bg-purple-50"
+                        >
+                          ⚙️ Admin Panel
+                        </Link>
+                      )}
+                      {profile.role === 'shop' && (
+                        <Link
+                          to="/shop"
+                          onClick={() => setOpen(false)}
+                          className="flex items-center gap-2 px-4 py-2 text-sm text-blue-600 hover:bg-blue-50"
+                        >
+                          🏪 Shop Portal
+                        </Link>
+                      )}
+                    </div>
+
+                    {/* Sign out */}
+                    <div className="border-t border-gray-100 pt-1">
+                      <button
+                        onClick={handleSignOut}
+                        className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-500 hover:bg-red-50 hover:text-red-600"
+                      >
+                        🚪 Sign out
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             ) : (
               <Link

@@ -1,9 +1,19 @@
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
 from app.routes import products, orders, categories, users, admin, ai
+from app.middleware.auth import prefetch_jwks
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    prefetch_jwks()
+    yield
+
 
 app = FastAPI(
+    lifespan=lifespan,
     title="Om Namashivaya Agents API",
     description="Backend API for Om Namashivaya Agents — electronics and food distribution",
     version="1.0.0",

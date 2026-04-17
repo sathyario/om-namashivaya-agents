@@ -2,8 +2,11 @@ from fastapi import HTTPException, Depends
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from jose import jwt, jwk, JWTError
 import httpx
+import time
+import logging
 from app.config import settings
 
+logger = logging.getLogger(__name__)
 security = HTTPBearer()
 
 _jwks_cache: dict[str, dict] = {}
@@ -14,10 +17,27 @@ def _get_jwks() -> dict[str, dict]:
     global _jwks_cache
     if not _jwks_cache:
         url = f"{settings.supabase_url}/auth/v1/.well-known/jwks.json"
-        resp = httpx.get(url, timeout=5)
-        resp.raise_for_status()
-        _jwks_cache = {k["kid"]: k for k in resp.json()["keys"]}
+        last_exc = None
+        for attempt in range(3):
+            try:
+                resp = httpx.get(url, timeout=30)
+                resp.raise_for_status()
+                _jwks_cache = {k["kid"]: k for k in resp.json()["keys"]}
+                return _jwks_cache
+            except Exception as exc:
+                last_exc = exc
+                if attempt < 2:
+                    time.sleep(2)
+        raise last_exc
     return _jwks_cache
+
+
+def prefetch_jwks() -> None:
+    try:
+        _get_jwks()
+        logger.info("JWKS pre-fetched and cached at startup")
+    except Exception as exc:
+        logger.warning("Could not pre-fetch JWKS at startup: %s", exc)
 
 
 def _get_public_key(kid: str) -> object:

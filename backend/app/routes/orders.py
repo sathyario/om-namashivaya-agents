@@ -61,6 +61,9 @@ def get_order(order_id: int, user: dict = Depends(get_current_user)):
     res = supabase.table("orders").select("*, order_items(*, products(*))").eq("id", order_id).single().execute()
     if not res.data:
         raise HTTPException(status_code=404, detail="Order not found")
+    role = (user.get("user_metadata") or {}).get("role")
+    if role != "admin" and res.data["user_id"] != user["sub"]:
+        raise HTTPException(status_code=403, detail="Access denied")
     return res.data
 
 @router.put("/{order_id}/status")

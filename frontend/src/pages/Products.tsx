@@ -49,16 +49,16 @@ export default function Products() {
     <div className="min-h-screen bg-gray-50 pb-24">
 
       {/* Top search + category bar — sticky */}
-      <div className="bg-white sticky top-14 z-30 border-b shadow-sm">
+      <div className="bg-white sticky top-14 z-30 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 lg:px-8 pt-3 pb-2">
-          <div className="relative mb-2">
+          <div className="relative w-full max-w-2xl mx-auto mb-2">
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">🔍</span>
             <input
               type="text"
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder="Search products..."
-              className="w-full bg-gray-100 rounded-xl pl-9 pr-8 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
+              className="w-full bg-gray-50 border border-gray-300 rounded-xl pl-9 pr-8 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-green-400"
             />
             {search && (
               <button
@@ -67,6 +67,30 @@ export default function Products() {
               >✕</button>
             )}
           </div>
+
+          {/* Active filter chips */}
+          {(categorySlug || brand || inStockOnly) && (
+            <div className="flex gap-2 flex-wrap w-full max-w-2xl mx-auto mb-2">
+              {categorySlug && (
+                <span className="bg-green-100 text-green-700 text-xs font-semibold px-3 py-1 rounded-full flex items-center gap-1">
+                  {CATEGORY_TABS.find(t => t.value === categorySlug)?.label ?? categorySlug}
+                  <button onClick={() => setSearchParams({})} className="ml-1 hover:text-green-900">✕</button>
+                </span>
+              )}
+              {brand && (
+                <span className="bg-green-100 text-green-700 text-xs font-semibold px-3 py-1 rounded-full flex items-center gap-1">
+                  {BRAND_TABS.find(b => b.value === brand)?.label ?? brand}
+                  <button onClick={() => setBrand('')} className="ml-1 hover:text-green-900">✕</button>
+                </span>
+              )}
+              {inStockOnly && (
+                <span className="bg-green-100 text-green-700 text-xs font-semibold px-3 py-1 rounded-full flex items-center gap-1">
+                  In stock only
+                  <button onClick={() => setInStockOnly(false)} className="ml-1 hover:text-green-900">✕</button>
+                </span>
+              )}
+            </div>
+          )}
 
           {/* Category tabs — mobile only (desktop uses sidebar) */}
           <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1 lg:hidden">
@@ -124,8 +148,8 @@ export default function Products() {
                       onClick={() => setBrand(b.value)}
                       className={`w-full text-left px-3 py-2 rounded-xl text-sm font-medium transition-colors ${
                         brand === b.value
-                          ? 'bg-gray-900 text-white'
-                          : 'text-gray-600 hover:bg-gray-100'
+                          ? 'bg-green-500 text-white font-semibold'
+                          : 'text-gray-600 hover:bg-green-50 hover:text-green-600'
                       }`}
                     >
                       {b.label}
@@ -161,8 +185,8 @@ export default function Products() {
                   onClick={() => setBrand(b.value)}
                   className={`flex-shrink-0 px-3 py-1 rounded-full text-xs font-medium border transition-colors ${
                     brand === b.value
-                      ? 'bg-gray-900 text-white border-gray-900'
-                      : 'bg-white text-gray-600 border-gray-200 hover:border-gray-400'
+                      ? 'bg-green-500 text-white border-green-500'
+                      : 'bg-white text-gray-600 border-gray-200 hover:border-green-300'
                   }`}
                 >
                   {b.label}
